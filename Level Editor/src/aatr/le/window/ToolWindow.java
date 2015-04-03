@@ -26,55 +26,62 @@ import javafx.stage.Stage;
 public class ToolWindow extends Application {
 
 	// Main Window Dimensions
-	public static final int WINDOW_WIDTH = 1280;
-	public static final int WINDOW_HEIGHT = 720;
-
-	// OpenGL Window Dimensions
-	public static final int GL_WINDOW_WIDTH = 400;
-	public static final int GL_WINDOW_HEIGHT = 400;
-
+	public static final int DEFAULT_WINDOW_WIDTH = 1280;
+	public static final int DEFAULT_WINDOW_HEIGHT = 720;
+	
+	// Panels
+	LeftPanel lpanel;
+	RightPanel rpanel;
+	TopPanel tpanel;
+	CenterPanel cpanel;
+	
+	
 	private Stage window;
-
-	private ImageView vimage;
-	private WritableImage wimage;
-	private PixelWriter pwriter;
+	private Scene scene;
 
 	private Renderer renderer;
 	private Thread renderThread;
-
+	
+	private BorderPane bp;
+	
 	public void start(Stage stage) {
 		window = stage;
-
+		
 		initialize();
-
-		BorderPane borderPane = new BorderPane();
-
-		borderPane.setCenter(vimage);
-
-		Scene scene = new Scene(borderPane, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-		window.setScene(scene);
-
-		window.show();
 	}
 
 	public synchronized void sendPixels(ByteBuffer pixels) {
-		pwriter.setPixels(0, 0, GL_WINDOW_WIDTH, GL_WINDOW_HEIGHT,
-				javafx.scene.image.PixelFormat.getByteRgbInstance(), pixels,
-				GL_WINDOW_WIDTH * Renderer.BYTES_PIXEL);
-		// System.out.println(pixels.get(1));
+		cpanel.sendPixels(pixels);
 	}
 
 	private void initialize() {
-		wimage = new WritableImage(GL_WINDOW_WIDTH, GL_WINDOW_HEIGHT);
-		vimage = new ImageView(wimage);
-		pwriter = wimage.getPixelWriter();
-
+		
+		bp = new BorderPane();
+		
+		lpanel = new LeftPanel(this);
+		bp.setLeft(lpanel.getBox());
+		rpanel = new RightPanel(this);
+		bp.setRight(rpanel.getBox());
+		tpanel = new TopPanel(this, window);
+		bp.setTop(tpanel.getBox());
+		cpanel = new CenterPanel(this, bp);
+		bp.setCenter(cpanel.getBox());
+		
+		scene = new Scene(bp, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+		
+		window.setScene(scene);
+		
 		renderer = new Renderer(this);
-
+		
 		renderThread = new Thread(renderer, "Renderer");
 
 		renderThread.start();
+		
+		window.show();
+	}
+	
+	public synchronized Renderer getRenderer() {
+		return renderer;
 	}
 
 	public void stop() {
