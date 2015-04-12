@@ -1,7 +1,6 @@
 package aatr.le.main;
 
-import aatr.le.window.ToolWindow;
-
+import aatr.le.panel.ToolWindow;
 import javafx.application.Application;
 
 public class Main {

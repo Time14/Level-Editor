@@ -1,0 +1,10 @@
+
+component	data		offset	size	byte-distribution
+
+header:	
+			ChunksX		0		2		2
+			ChunksY		2		2		2
+			TileSet		4		2		2
+			Border 		6		8		2|2|2|2
+			Chunks		14		256		2*16|16
+Chunks:		

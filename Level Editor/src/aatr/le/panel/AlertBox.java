@@ -1,4 +1,4 @@
-package aatr.le.window;
+package aatr.le.panel;
 
 
 import javafx.geometry.Pos;
@@ -14,5 +14,4 @@ public final class AlertBox {
 	public static final void showBox(String title, String message) {
 		
 	}
-	
 }
